@@ -1,0 +1,60 @@
+<template>
+  <div class="container">
+    <span class="text">
+      Your value is: <span class="attr-val"></span>
+      <button class="trigger">Ok</button>
+    </span>
+  </div>
+  <style>
+    .container {
+      padding: 50px;
+      background-color: #f0f0f0;
+    }
+  </style>
+</template>
+<script>
+  const ownerDocument = (document._currentScript || document.currentScript).ownerDocument;
+  const template = ownerDocument.querySelector('template').content;
+
+  class WebComponent extends HTMLElement {
+
+    static get observedAttributes() { return ["val"]; }
+
+    createdCallback() {
+      this.root = this.createShadowRoot();
+      this.root.appendChild(document.importNode(template, true));
+      // Dispatch change event when user submits
+      this.root.querySelector('.trigger').addEventListener('click', event => {
+        event.stopPropagation();
+        this.dispatchEvent(new Event('change', {bubbles: true}));
+      });
+
+      this.attrValHolder = this.root.querySelector('.attr-val');
+      if (this.hasAttribute('val')) {
+        this.renderAttrVal(this.getAttribute('val'));
+      }
+    }
+
+    attributeChangedCallback(attribute, oldVal, newVal) {
+      if (attribute === 'val') {
+        this._val = newVal;
+        this.renderAttrVal(newVal);
+      }
+    }
+
+    get val() {
+      return this._val;
+    }
+
+    set val(val) {
+      this._val = val;
+      this.renderAttrVal(val);
+    }
+
+    renderAttrVal(value) {
+      this.attrValHolder.textContent = value;
+    }
+  }
+
+  document.registerElement('web-component', WebComponent);
+</script>
