@@ -1,0 +1,15 @@
+<template>
+  <require from="./children"></require>
+  <p>Below are groups which get's re-rendered every time you add a child or re-name one. You can see it because of the logged getter calls.</p>
+  <div repeat.for="group of groupedChildren">
+    <h3>${group.title}</h3>
+    <div repeat.for="child of group.children">
+      <children child.bind="child"></children>
+    </div>
+  </div>
+  <br/>
+  <br/>
+  <label>Add new child</label>
+  <input type="text" value.bind="newChildName" />
+  <button click.delegate="addChildren(newChildName)">Add</button>
+</template>
